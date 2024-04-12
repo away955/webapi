@@ -28,6 +28,7 @@ async fn main() {
         .unwrap();
 
     tracing::info!("listening on {}", listener.local_addr().unwrap());
+
     axum::serve(listener, app)
         .with_graceful_shutdown(shutdown_signal())
         .await
