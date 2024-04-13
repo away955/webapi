@@ -16,8 +16,8 @@ use crate::models::api_result::ApiResult;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
     pub sub: String,
-    pub userid: i32,
     pub exp: i64,
+    pub userid: i32,
 }
 
 /// 实现从请求中获取Claims
