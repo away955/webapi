@@ -1,14 +1,33 @@
 use std::{convert::Infallible, ops::FromResidual};
 
+use askama::Template;
 use axum::{
     http::StatusCode,
-    response::{IntoResponse, Response},
+    response::{Html, IntoResponse, Response},
     Json,
 };
 use serde::Serialize;
 
+pub(crate) struct View<T>(pub(crate) T);
+
+impl<T> IntoResponse for View<T>
+where
+    T: Template,
+{
+    fn into_response(self) -> Response {
+        match self.0.render() {
+            Ok(html) => Html(html).into_response(),
+            Err(err) => {
+                tracing::error!("系统错误：{err}");
+                (StatusCode::INTERNAL_SERVER_ERROR, "系统错误".to_string())
+            }
+            .into_response(),
+        }
+    }
+}
+
 #[derive(Serialize, Debug)]
-pub struct ApiResult<T> {
+pub(crate) struct ApiResult<T> {
     pub data: Option<T>,
     pub success: bool,
     pub code: i32,

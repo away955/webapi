@@ -4,11 +4,10 @@ use axum::{extract::State, Json};
 
 use crate::{
     auth::Claims,
-    models::api_result::ApiResult,
     services::account::{self, *},
 };
 
-use super::AppState;
+use super::{ApiResult, AppState};
 
 pub(super) async fn login(
     State(state): State<Arc<AppState>>,

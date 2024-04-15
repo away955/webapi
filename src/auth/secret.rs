@@ -3,12 +3,12 @@ use once_cell::sync::Lazy;
 
 use crate::settings;
 
-pub static KEYS: Lazy<Keys> = Lazy::new(|| {
+pub(crate) static KEYS: Lazy<Keys> = Lazy::new(|| {
     let secret = settings::jwt_secret();
     Keys::new(secret)
 });
 
-pub struct Keys {
+pub(crate) struct Keys {
     pub encoding: EncodingKey,
     pub decoding: DecodingKey,
 }

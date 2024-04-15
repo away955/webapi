@@ -11,13 +11,13 @@ use axum_extra::{
 use jsonwebtoken::{decode, encode, Header, Validation};
 use serde::{Deserialize, Serialize};
 
-use crate::models::api_result::ApiResult;
+use crate::controllers::ApiResult;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Claims {
-    pub sub: String,
-    pub exp: i64,
-    pub userid: i32,
+pub(crate) struct Claims {
+    pub(crate) sub: String,
+    pub(crate) exp: i64,
+    pub(crate) userid: i32,
 }
 
 /// 实现从请求中获取Claims
@@ -34,13 +34,13 @@ where
     }
 }
 
-pub fn create_token(claims: Claims) -> anyhow::Result<String> {
+pub(crate) fn create_token(claims: Claims) -> anyhow::Result<String> {
     let keys = &secret::KEYS;
     let token = encode(&Header::default(), &claims, &keys.encoding)?;
     Ok(token)
 }
 
-pub async fn validation_token(parts: &mut Parts) -> anyhow::Result<Claims> {
+pub(crate) async fn validation_token(parts: &mut Parts) -> anyhow::Result<Claims> {
     let TypedHeader(Authorization(bearer)) = parts
         .extract::<TypedHeader<Authorization<Bearer>>>()
         .await
@@ -54,7 +54,10 @@ pub async fn validation_token(parts: &mut Parts) -> anyhow::Result<Claims> {
 }
 
 /// jwt 校验中间件
-pub async fn middleware(req: Request, next: Next) -> Result<impl IntoResponse, ApiResult<()>> {
+pub(crate) async fn middleware(
+    req: Request,
+    next: Next,
+) -> Result<impl IntoResponse, ApiResult<()>> {
     let (mut parts, body) = req.into_parts();
     validation_token(&mut parts).await?;
 

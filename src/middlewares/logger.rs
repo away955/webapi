@@ -6,10 +6,13 @@ use axum::{
 };
 use http_body_util::BodyExt;
 
-use crate::models::api_result::ApiResult;
+use crate::controllers::ApiResult;
 
 /// http请求日志中间件
-pub async fn middleware(req: Request, next: Next) -> Result<impl IntoResponse, ApiResult<()>> {
+pub(crate) async fn middleware(
+    req: Request,
+    next: Next,
+) -> Result<impl IntoResponse, ApiResult<()>> {
     let (parts, body) = req.into_parts();
     let host = format!("{} {}", parts.method, parts.uri);
     let request = format!("request: {}", host);

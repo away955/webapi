@@ -7,11 +7,9 @@ use axum::{
 use futures_util::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
 
-use crate::auth;
+use crate::{auth, AppState};
 
-use super::AppState;
-
-pub async fn handler(
+pub(super) async fn handler(
     user: auth::Claims,
     State(state): State<Arc<AppState>>,
     upgrade: ws::WebSocketUpgrade,
@@ -114,7 +112,7 @@ async fn websocket(uid: i32, state: Arc<AppState>, socket: ws::WebSocket) {
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
-pub enum Payload {
+pub(crate) enum Payload {
     One(i32, i32, Message),
     Group(i32, i32, Message),
     All(i32, Message),
@@ -122,7 +120,7 @@ pub enum Payload {
 }
 
 #[derive(Deserialize, Serialize, Default, Clone, Debug)]
-pub struct Message {
-    pub method: String,
-    pub data: Option<String>,
+pub(crate) struct Message {
+    pub(crate) method: String,
+    pub(crate) data: Option<String>,
 }
