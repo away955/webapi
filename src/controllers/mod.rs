@@ -8,17 +8,49 @@ pub(crate) use chathub::Payload;
 pub(crate) use result::ApiResult;
 pub(crate) use result::View;
 
-use std::sync::Arc;
-
 use axum::{middleware, routing::*};
+use std::sync::Arc;
+use utoipa::openapi::security::ApiKey;
+use utoipa::openapi::security::ApiKeyValue;
+use utoipa::openapi::security::SecurityScheme;
+use utoipa::Modify;
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
 
+use crate::services;
 use crate::{auth, AppState};
 
-pub(crate) fn routes(state: Arc<AppState>) -> Router {
+/// 配置swagger文档
+#[derive(OpenApi)]
+#[openapi(
+    paths(account::login, account::register, account::info, account::logout),
+    components(schemas(services::account::LoginDTO)),  
+    info(
+        title = "性能屌炸天的后台接口",
+        description = "后台管理接口文档",
+        version = "1.0.0"
+    ),
+    modifiers(&SecurityAddon),     
+)]
+struct Swagger;
+struct SecurityAddon;
+impl Modify for SecurityAddon {
+    fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
+        if let Some(components) = openapi.components.as_mut() {
+            components.add_security_scheme(
+                "Authorization",
+                SecurityScheme::ApiKey(ApiKey::Header(ApiKeyValue::new("Authorization"))),
+            )
+        }
+    }
+}
+
+pub(crate) fn routes(state: Arc<AppState>) -> Router { 
     Router::new()
         .merge(views_routes())
         .merge(auth_routes(state.clone()))
         .merge(no_auth_routes(state.clone()))
+        .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", Swagger::openapi()))         
 }
 
 /// 需要：jwt授权认证的接口
@@ -46,3 +78,5 @@ fn views_routes() -> Router {
         .route("/upload", post(upload::upload))
         .route("/home", get(home::index))
 }
+
+

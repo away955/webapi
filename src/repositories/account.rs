@@ -1,10 +1,10 @@
 #![allow(dead_code)]
 
+use crate::entities::prelude::SysAccount;
 use anyhow::{anyhow, Ok, Result};
 use sea_orm::{ColumnTrait, DbConn, EntityTrait, IntoActiveModel, QueryFilter};
 
-use crate::entities::prelude::SysAccount;
-use crate::entities::sys_account;
+use crate::entities::sys_account::{self};
 
 pub async fn get_by_id(db: &DbConn, id: i32) -> Result<Option<sys_account::Model>> {
     let data = SysAccount::find_by_id(id).one(db).await?;

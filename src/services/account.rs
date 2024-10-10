@@ -3,6 +3,7 @@ use chrono::{Duration, Local, Utc};
 use sea_orm::prelude::DateTime;
 use sea_orm::DbConn;
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 use crate::{
@@ -19,7 +20,7 @@ pub struct LoginModel {
     pub token_exp: i64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct LoginDTO {
     pub account: String,
     pub password: String,

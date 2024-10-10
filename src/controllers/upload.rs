@@ -10,7 +10,8 @@ pub(super) async fn upload(mut multipart: Multipart) -> ApiResult<()> {
     while let Some(field) = multipart
         .next_field()
         .await
-        .map_err(|err| anyhow!("上传文件失败：{err}"))?
+        .map_err(|err| anyhow!("上传文件失败：{err}"))
+        .unwrap()
     {
         let name = field.name().unwrap().to_string();
         let file_name = field.file_name().unwrap().to_string();

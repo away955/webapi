@@ -1,5 +1,3 @@
-use std::{convert::Infallible, ops::FromResidual};
-
 use askama::Template;
 use axum::{
     http::StatusCode,
@@ -88,24 +86,26 @@ where
         }
     }
 }
+// 当前版本(ightly-x86_64-pc-windows-msvc)编译失败
+// #![feature(try_trait_v2)]
+// use std::{convert::Infallible, ops::FromResidual};
+// impl<T> FromResidual<anyhow::Result<Infallible>> for ApiResult<T>
+// where
+//     T: Serialize,
+// {
+//     fn from_residual(residual: anyhow::Result<Infallible>) -> Self {
+//         match residual {
+//             Ok(_) => ApiResult::new(None, 0, true, None),
+//             Err(err) => err.into(),
+//         }
+//     }
+// }
 
-impl<T> FromResidual<anyhow::Result<Infallible>> for ApiResult<T>
-where
-    T: Serialize,
-{
-    fn from_residual(residual: anyhow::Result<Infallible>) -> Self {
-        match residual {
-            Ok(_) => ApiResult::new(None, 0, true, None),
-            Err(err) => err.into(),
-        }
-    }
-}
-
-impl<T> FromResidual<anyhow::Error> for ApiResult<T>
-where
-    T: Serialize,
-{
-    fn from_residual(residual: anyhow::Error) -> Self {
-        residual.into()
-    }
-}
+// impl<T> FromResidual<anyhow::Error> for ApiResult<T>
+// where
+//     T: Serialize,
+// {
+//     fn from_residual(residual: anyhow::Error) -> Self {
+//         residual.into()
+//     }
+// }

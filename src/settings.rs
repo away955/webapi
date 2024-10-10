@@ -3,7 +3,7 @@ pub fn init() {
 }
 
 pub fn db_url() -> String {
-    get_value("DB_URL")
+    get_value("DATABASE_URL")
 }
 pub fn host() -> String {
     get_value("Host")
